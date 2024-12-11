@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input:-webkit-autofill {
+  background-color: #242526 !important; /* Ou a cor desejada */
+  color: #ffffff !important; /* Ou a cor desejada */
+  text-decoration-color: #ffffff;
+  border-bottom-color: #ffffff !important; /* Ou a cor desejada */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Mantém a animação para focus, hover, etc. */
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: #242526 !important;
+  color: #ffffff !important;
+  text-decoration-color: #ffffff;
+  border-bottom-color: #ffffff !important;
+}

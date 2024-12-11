@@ -10,12 +10,23 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const maps_module_1 = require("./maps/maps.module");
+const config_1 = require("@nestjs/config");
+const routes_module_1 = require("./routes/routes.module");
+const prisma_module_1 = require("./prisma/prisma.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            prisma_module_1.PrismaModule,
+            maps_module_1.MapsModule,
+            routes_module_1.RoutesModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

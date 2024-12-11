@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/home/react/app
+    ports: 
+      - 3001:3001
