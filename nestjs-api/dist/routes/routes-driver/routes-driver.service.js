@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoutesDriverService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const routes_driver_gateway_1 = require("./routes-driver.gateway");
 let RoutesDriverService = class RoutesDriverService {
-    constructor(prismaService) {
+    constructor(prismaService, routesGateway) {
         this.prismaService = prismaService;
+        this.routesGateway = routesGateway;
     }
-    processRoute(dto) {
-        return this.prismaService.routeDriver.upsert({
+    async processRoute(dto) {
+        const routeDriver = this.prismaService.routeDriver.upsert({
             include: {
                 route: true,
             },
@@ -44,11 +46,18 @@ let RoutesDriverService = class RoutesDriverService {
                 },
             },
         });
+        this.routesGateway.emitNewPoints({
+            route_id: dto.route_id,
+            lat: dto.lat,
+            lng: dto.lng,
+        });
+        return routeDriver;
     }
 };
 exports.RoutesDriverService = RoutesDriverService;
 exports.RoutesDriverService = RoutesDriverService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        routes_driver_gateway_1.RoutesDriverGateway])
 ], RoutesDriverService);
 //# sourceMappingURL=routes-driver.service.js.map

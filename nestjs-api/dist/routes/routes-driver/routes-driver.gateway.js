@@ -8,13 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var RoutesDriverGateway_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoutesDriverGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const routes_service_1 = require("../routes.service");
-let RoutesDriverGateway = class RoutesDriverGateway {
+const socket_io_1 = require("socket.io");
+const common_1 = require("@nestjs/common");
+let RoutesDriverGateway = RoutesDriverGateway_1 = class RoutesDriverGateway {
     constructor(routesService) {
         this.routesService = routesService;
+        this.logger = new common_1.Logger(RoutesDriverGateway_1.name);
     }
     async handleMessage(client, payload) {
         const { route_id } = payload;
@@ -48,15 +52,32 @@ let RoutesDriverGateway = class RoutesDriverGateway {
             await sleep(2000);
         }
     }
+    emitNewPoints(payload) {
+        this.logger.log(`Emitting new points for route ${payload.route_id} - ${payload.lat}, ${payload.lng}`);
+        this.server.emit(`server:new-points/${payload.route_id}:list`, {
+            route_id: payload.route_id,
+            lat: payload.lat,
+            lng: payload.lng,
+        });
+        this.server.emit('server:new-points:list', {
+            route_id: payload.route_id,
+            lat: payload.lat,
+            lng: payload.lng,
+        });
+    }
 };
 exports.RoutesDriverGateway = RoutesDriverGateway;
+__decorate([
+    (0, websockets_1.WebSocketServer)(),
+    __metadata("design:type", socket_io_1.Server)
+], RoutesDriverGateway.prototype, "server", void 0);
 __decorate([
     (0, websockets_1.SubscribeMessage)('client:new-points'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], RoutesDriverGateway.prototype, "handleMessage", null);
-exports.RoutesDriverGateway = RoutesDriverGateway = __decorate([
+exports.RoutesDriverGateway = RoutesDriverGateway = RoutesDriverGateway_1 = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
             origin: '*',

@@ -13,13 +13,17 @@ const routes_controller_1 = require("./routes.controller");
 const maps_module_1 = require("../maps/maps.module");
 const routes_driver_service_1 = require("./routes-driver/routes-driver.service");
 const routes_driver_gateway_1 = require("./routes-driver/routes-driver.gateway");
+const kafka_module_1 = require("../kafka/kafka.module");
+const routes_consumer_1 = require("./routes.consumer");
+const axios_1 = require("@nestjs/axios");
+const routes_driver_consumer_1 = require("./routes-driver/routes-driver.consumer");
 let RoutesModule = class RoutesModule {
 };
 exports.RoutesModule = RoutesModule;
 exports.RoutesModule = RoutesModule = __decorate([
     (0, common_1.Module)({
-        imports: [maps_module_1.MapsModule],
-        controllers: [routes_controller_1.RoutesController],
+        imports: [maps_module_1.MapsModule, kafka_module_1.KafkaModule, axios_1.HttpModule],
+        controllers: [routes_controller_1.RoutesController, routes_consumer_1.RoutesConsumer, routes_driver_consumer_1.RoutesDriverConsumer],
         providers: [routes_service_1.RoutesService, routes_driver_service_1.RoutesDriverService, routes_driver_gateway_1.RoutesDriverGateway],
     })
 ], RoutesModule);

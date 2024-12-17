@@ -1,7 +1,7 @@
 services:
-  app:
+  next:
     build: .
     volumes:
-      - .:/home/react/app
+      - .:/home/node/app
     ports: 
       - 3001:3001

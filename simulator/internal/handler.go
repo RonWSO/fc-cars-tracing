@@ -1,6 +1,10 @@
 package internal
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type RouteCreatedEvent struct {
 	EventName  string       `json:"event"`
@@ -60,29 +64,27 @@ func NewDriverMovedEvent(routeID string, lat float64, lng float64) *DriverMovedE
 	}
 }
 
-func RouteCreatedHandler(event *RouteCreatedEvent, rs *RouteService) (*FreightCalculatedEvent, error) {
+func RouteCreatedHandler(event *RouteCreatedEvent, routeService *RouteService, mongoClient *mongo.Client) (*FreightCalculatedEvent, error) {
 	route := NewRoute(event.RouteID, event.Distance, event.Directions)
-	routeCreated, err := rs.CreateRoute(route)
+	routeCreated, err := routeService.CreateRoute(route)
 	if err != nil {
 		return nil, err
 	}
-	FreightCalculatedEvent := NewFreightCalculatedEvent(routeCreated.ID, routeCreated.FreightPrice)
-	return FreightCalculatedEvent, nil
+	return NewFreightCalculatedEvent(routeCreated.ID, routeCreated.FreightPrice), nil
 }
 
-func DeliveryStartedHandler(event *DeliveryStartedEvent, rs *RouteService, ch chan *DriverMovedEvent) error {
-	route, err := rs.GetRoute(event.RouteID)
+func DeliveryStartedHandler(event *DeliveryStartedEvent, routeService *RouteService, mongoClient *mongo.Client, ch chan *DriverMovedEvent) error {
+	route, err := routeService.GetRoute(event.RouteID)
 	if err != nil {
 		return err
 	}
 
-	driverMovedEvent := NewDriverMovedEvent(route.ID, 0, 0)
-	for _, direction := range route.Directions {
-		driverMovedEvent.RouteID = route.ID
-		driverMovedEvent.Lat = direction.Lat
-		driverMovedEvent.Lng = direction.Lng
-		time.Sleep(time.Second)
-		ch <- driverMovedEvent
-	}
+	go func() {
+		for _, direction := range route.Directions {
+			dme := NewDriverMovedEvent(route.ID, direction.Lat, direction.Lng)
+			ch <- dme
+			time.Sleep(1 * time.Second)
+		}
+	}()
 	return nil
 }

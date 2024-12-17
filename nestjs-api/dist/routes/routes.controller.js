@@ -17,12 +17,24 @@ const common_1 = require("@nestjs/common");
 const routes_service_1 = require("./routes.service");
 const create_route_dto_1 = require("./dto/create-route.dto");
 const update_route_dto_1 = require("./dto/update-route.dto");
+const routes_driver_service_1 = require("./routes-driver/routes-driver.service");
 let RoutesController = class RoutesController {
-    constructor(routesService) {
+    constructor(routesService, routesDriverService) {
         this.routesService = routesService;
+        this.routesDriverService = routesDriverService;
     }
     create(createRouteDto) {
         return this.routesService.create(createRouteDto);
+    }
+    processRoute(id, payload) {
+        return this.routesDriverService.processRoute({
+            route_id: id,
+            lat: payload.lat,
+            lng: payload.lng,
+        });
+    }
+    startRoute(id) {
+        return this.routesService.startRoute(id);
     }
     findAll() {
         return this.routesService.findAll();
@@ -31,7 +43,7 @@ let RoutesController = class RoutesController {
         return this.routesService.findOne(id);
     }
     update(id, updateRouteDto) {
-        return this.routesService.update(+id, updateRouteDto);
+        return this.routesService.update(id, updateRouteDto);
     }
     remove(id) {
         return this.routesService.remove(+id);
@@ -45,6 +57,21 @@ __decorate([
     __metadata("design:paramtypes", [create_route_dto_1.CreateRouteDto]),
     __metadata("design:returntype", void 0)
 ], RoutesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)(':id/process-route'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], RoutesController.prototype, "processRoute", null);
+__decorate([
+    (0, common_1.Post)(':id/start'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], RoutesController.prototype, "startRoute", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -75,6 +102,7 @@ __decorate([
 ], RoutesController.prototype, "remove", null);
 exports.RoutesController = RoutesController = __decorate([
     (0, common_1.Controller)('routes'),
-    __metadata("design:paramtypes", [routes_service_1.RoutesService])
+    __metadata("design:paramtypes", [routes_service_1.RoutesService,
+        routes_driver_service_1.RoutesDriverService])
 ], RoutesController);
 //# sourceMappingURL=routes.controller.js.map
